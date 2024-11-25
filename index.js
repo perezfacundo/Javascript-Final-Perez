@@ -1,4 +1,3 @@
-const formCliente = document.getElementById('formCliente');
 let dataTable
 let dataTableIsInitialized = false
 
@@ -24,7 +23,7 @@ const dataTableOptions = {
 //Inicializacion de datatables
 const initDataTable = async () => {
     if (dataTableIsInitialized) {
-        dataTableIsInitialized.destroy()
+        dataTable.destroy()
     }
 
     await listarClientes()
@@ -49,7 +48,6 @@ const key = () => {
 }
 
 //2. Guardar cliente en bd
-// formCliente.addEventListener('submit', async (event) => {
 document.getElementById('btnGuardar').addEventListener('click', async (event) => {
     event.preventDefault();
 
@@ -84,7 +82,15 @@ document.getElementById('btnGuardar').addEventListener('click', async (event) =>
         const myModal = document.getElementById('exampleModal');
         myModal.style.display = 'none'
 
-        await listarClientes()
+        const modalBackdrops = document.querySelectorAll('.modal-backdrop')
+        modalBackdrops.forEach(backdrop => {
+            backdrop.parentNode.removeChild(backdrop)
+        })
+
+        console.log('antes de init datatable')
+        
+        await initDataTable()
+        console.log('despues de init datatable')
     }
 });
 
