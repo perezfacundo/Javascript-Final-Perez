@@ -1,17 +1,41 @@
 const formCliente = document.getElementById('formCliente');
+let dataTable
+let dataTableIsInitialized = false
 
-// INICIAR PAGINA
-document.addEventListener('DOMContentLoaded', function() {
-    listarClientes()
-})
+const dataTableOptions = {
+    destroy: true,
+    language: {
+        lengthMenu: "Mostrar _MENU_ registros por página",
+        zeroRecords: "Ningún usuario encontrado",
+        info: "Mostrando de _START_ a _END_ de un total de _TOTAL_ registros",
+        infoEmpty: "Ningún usuario encontrado",
+        infoFiltered: "(filtrados desde _MAX_ registros totales)",
+        search: "Buscar:",
+        loadingRecords: "Cargando...",
+        paginate: {
+            first: "Primero",
+            last: "Último",
+            next: "Siguiente",
+            previous: "Anterior"
+        }
+    }
+}
+
+//Inicializacion de datatables
+const initDataTable = async () => {
+    if (dataTableIsInitialized) {
+        dataTableIsInitialized.destroy()
+    }
+
+    await listarClientes()
+
+    dataTable = $('#tablaClientes').DataTable(dataTableOptions)
+
+    dataTableIsInitialized = true
+}
 
 //GUARDAR NUEVO CLIENTE
-//1. Buscar codigo repetido.  ✅Existe? El codigo ingresado ya existe. || ❌No existe? Siguiente paso ->
-// const buscarCoincidencia = () => {
-
-// }
-
-//2. Crear nueva clave.
+//1. Crear nueva clave.
 const key = () => {
     const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     let cadena = ''
@@ -24,15 +48,15 @@ const key = () => {
     return cadena
 }
 
-//3. Guardar cliente en bd
-//dependiendo de las constantes validacionFomrulario y buscarCoincidencia -> agregar el cliente en el storage
-formCliente.addEventListener('submit', (event) => {
+//2. Guardar cliente en bd
+// formCliente.addEventListener('submit', async (event) => {
+document.getElementById('btnGuardar').addEventListener('click', async (event) => {
     event.preventDefault();
 
     let clientes = JSON.parse(localStorage.getItem('clientes')) || []
 
     const nuevoCliente = {
-        clave: key(),
+        // clave: key(),
         nombres: document.getElementById('nombres').value,
         apellidos: document.getElementById('apellidos').value,
         codigo: document.getElementById('codigo').value,
@@ -40,48 +64,56 @@ formCliente.addEventListener('submit', (event) => {
         nombreDeco: document.getElementById('nombreDeco').value
     }
 
-    clientes.push(nuevoCliente)
+    //Verificar si el codigo ya pertenece a un cliente
+    const codigoYaExiste = clientes.some(cliente => cliente.codigo === nuevoCliente.codigo);
 
-    // Guardar los datos en el Local Storage
-    localStorage.setItem('clientes', JSON.stringify(clientes));
+    if (codigoYaExiste) {
+        console.log('El codigo ya existe')
+    } else {
+        // Guardar los datos en el Local Storage
+        clientes.push(nuevoCliente)
+        localStorage.setItem('clientes', JSON.stringify(clientes));
 
-    // Cerrar el modal
-    const myModal = document.getElementById('exampleModal');
-    const modal = bootstrap.Modal.getInstance(myModal);
-    modal.hide();
+        document.getElementById('nombres').value = ''
+        document.getElementById('apellidos').value = ''
+        document.getElementById('codigo').value = ''
+        document.getElementById('telefono').value = ''
+        document.getElementById('nombreDeco').value = ''
 
-    document.getElementById('nombres').value = ''
-    document.getElementById('apellidos').value = ''
-    document.getElementById('codigo').value = ''
-    document.getElementById('telefono').value = ''
-    document.getElementById('nombreDeco').value = ''
+        // Cerrar el modal
+        const myModal = document.getElementById('exampleModal');
+        myModal.style.display = 'none'
 
-    listarClientes()
+        await listarClientes()
+    }
 });
 
-//LISTAR CLIENTES
-function listarClientes() {
-    const clientesGuardados = JSON.parse(localStorage.getItem('clientes')) || []
-    const tbody = document.getElementById('tbody')
-    let i = 1
+//LISTAR CLIENTES con datatables
+const listarClientes = async () => {
 
-    clientesGuardados.forEach(cliente => {
-        const fila = document.createElement('tr')
-        
-        fila.innerHTML = `
-            <td>${i}</td>
-            <td>${cliente.nombres}</td>
-            <td>${cliente.apellidos}</td>
-            <td>${cliente.codigo}</td>
-            <td>${cliente.telefono}</td>
-            <td>${cliente.nombreDeco}</td>
-            <td>acciones</td>
+    const clientes = JSON.parse(localStorage.getItem('clientes')) || []
+
+    let content = ``
+
+    clientes.forEach((cliente, index) => {
+        content += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${cliente.nombres}</td>
+                <td>${cliente.apellidos}</td>
+                <td>${cliente.codigo}</td>
+                <td>${cliente.nombreDeco}</td>
+                <td>${cliente.telefono}</td>
+                <td><i class="fa-solid fa-check" style="color: green;"></i></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary"><i class="fa-solid fa-pencil"></i></button>
+                        <button class="btn btn-sm btn-danger"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+            </tr>
         `
+    })
 
-        tbody.appendChild(fila)
-
-        i++
-    });
+    tableBody_users.innerHTML = content;
 }
 
 //ELIMINAR CLIENTE
@@ -91,3 +123,9 @@ function listarClientes() {
 
 
 //EDITAR CLIENTE
+
+
+// INICIAR PAGINA
+window.addEventListener('load', async () => {
+    await initDataTable()
+})
