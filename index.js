@@ -59,7 +59,8 @@ document.getElementById('btnGuardar').addEventListener('click', async (event) =>
         apellidos: document.getElementById('apellidos').value,
         codigo: document.getElementById('codigo').value,
         telefono: document.getElementById('telefono').value,
-        nombreDeco: document.getElementById('nombreDeco').value
+        nombreDeco: document.getElementById('nombreDeco').value,
+        enUso: true
     }
 
     //Verificar si el codigo ya pertenece a un cliente
@@ -79,7 +80,7 @@ document.getElementById('btnGuardar').addEventListener('click', async (event) =>
         document.getElementById('nombreDeco').value = ''
 
         // Cerrar el modal
-        const myModal = document.getElementById('exampleModal');
+        const myModal = document.getElementById('agregarClienteModal');
         myModal.style.display = 'none'
 
         const modalBackdrops = document.querySelectorAll('.modal-backdrop')
@@ -88,7 +89,7 @@ document.getElementById('btnGuardar').addEventListener('click', async (event) =>
         })
 
         console.log('antes de init datatable')
-        
+
         await initDataTable()
         console.log('despues de init datatable')
     }
@@ -103,20 +104,30 @@ const listarClientes = async () => {
 
     clientes.forEach((cliente, index) => {
         content += `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${cliente.nombres}</td>
-                <td>${cliente.apellidos}</td>
-                <td>${cliente.codigo}</td>
-                <td>${cliente.nombreDeco}</td>
-                <td>${cliente.telefono}</td>
-                <td><i class="fa-solid fa-check" style="color: green;"></i></td>
-                    <td>
-                        <button class="btn btn-sm btn-primary"><i class="fa-solid fa-pencil"></i></button>
-                        <button class="btn btn-sm btn-danger"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
-            </tr>
+        <tr>
+            <td>${index + 1}</td>
+            <td>${cliente.nombres}</td>
+            <td>${cliente.apellidos}</td>
+            <td>${cliente.codigo}</td>
+            <td>${cliente.nombreDeco}</td>
+            <td>${cliente.telefono}</td>
         `
+        if (cliente.enUso) {
+            content += `<td><i class="fa-solid fa-check" style="color: green;"></i></td>`
+        } else {
+            content += `<td><i class="fa-solid fa-circle-xmark" style="color: #ed333b;"></i></td>`
+        }
+
+        //editar: debe cargar la informacion en el modal editarClienteModal
+        //eliminar: debe preguntar si desea eliminar el cliente en el modal eliminarClienteModal
+        content += `
+            <td>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editarClienteModal"><i class="fa-solid fa-pencil"></i></button>
+                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#eliminarClienteModal"><i class="fa-solid fa-trash-can"></i></button>
+            </td>
+        </tr>
+        `
+
     })
 
     tableBody_users.innerHTML = content;
