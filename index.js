@@ -54,7 +54,7 @@ document.getElementById('btnGuardar').addEventListener('click', async (event) =>
     let clientes = JSON.parse(localStorage.getItem('clientes')) || []
 
     const nuevoCliente = {
-        // clave: key(),
+        clave: key(),
         nombres: document.getElementById('nombres').value,
         apellidos: document.getElementById('apellidos').value,
         codigo: document.getElementById('codigo').value,
@@ -122,8 +122,8 @@ const listarClientes = async () => {
         //eliminar: debe preguntar si desea eliminar el cliente en el modal eliminarClienteModal
         content += `
             <td>
-                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editarClienteModal"><i class="fa-solid fa-pencil"></i></button>
-                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#eliminarClienteModal"><i class="fa-solid fa-trash-can"></i></button>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editarClienteModal" onclick="editarCliente(${cliente.key})"><i class="fa-solid fa-pencil"></i></button>
+                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#eliminarClienteModal onclick="eliminarCliente(${cliente.key})""><i class="fa-solid fa-trash-can"></i></button>
             </td>
         </tr>
         `
@@ -134,12 +134,15 @@ const listarClientes = async () => {
 }
 
 //ELIMINAR CLIENTE
+function eliminarCliente(id) {
 
-
-//BUSCAR CLIENTE /S
+}
 
 
 //EDITAR CLIENTE
+function editarCliente(id) {
+    
+}
 
 
 // INICIAR PAGINA
