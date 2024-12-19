@@ -2,6 +2,12 @@ let dataTable
 let dataTableIsInitialized = false
 
 const dataTableOptions = {
+    columnDefs: [
+        {
+            className: 'dt-center',
+            targets: 6
+        }
+    ],
     destroy: true,
     language: {
         lengthMenu: "Mostrar _MENU_ registros por página",
@@ -67,7 +73,7 @@ document.getElementById('btnGuardar').addEventListener('click', async (event) =>
     const codigoYaExiste = clientes.some(cliente => cliente.codigo === nuevoCliente.codigo);
 
     if (codigoYaExiste) {
-        console.log('El codigo ya existe')
+        alert('El codigo ya existe')
     } else {
         // Guardar los datos en el Local Storage
         clientes.push(nuevoCliente)
@@ -88,10 +94,7 @@ document.getElementById('btnGuardar').addEventListener('click', async (event) =>
             backdrop.parentNode.removeChild(backdrop)
         })
 
-        console.log('antes de init datatable')
-
         await initDataTable()
-        console.log('despues de init datatable')
     }
 });
 
@@ -122,8 +125,8 @@ const listarClientes = async () => {
         //eliminar: debe preguntar si desea eliminar el cliente en el modal eliminarClienteModal
         content += `
             <td>
-                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editarClienteModal" onclick="editarCliente(${cliente.key})"><i class="fa-solid fa-pencil"></i></button>
-                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#eliminarClienteModal onclick="eliminarCliente(${cliente.key})""><i class="fa-solid fa-trash-can"></i></button>
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editarClienteModal" onclick="mostrarModalEditar(${cliente.key})"><i class="fa-solid fa-pencil"></i></button>
+                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#eliminarClienteModal onclick="mostrarModalEliminar(${cliente.key})""><i class="fa-solid fa-trash-can"></i></button>
             </td>
         </tr>
         `
